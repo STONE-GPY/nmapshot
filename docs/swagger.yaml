@@ -1,0 +1,82 @@
+basePath: /api/v1
+definitions:
+  handler.ErrorResponse:
+    properties:
+      error:
+        example: 'failed to run nmap scan: ...'
+        type: string
+    type: object
+  handler.ScanRequest:
+    properties:
+      ports:
+        example:
+        - "80"
+        - "443"
+        items:
+          type: string
+        type: array
+      targets:
+        example:
+        - 127.0.0.1
+        - scanme.nmap.org
+        items:
+          type: string
+        type: array
+    required:
+    - ports
+    - targets
+    type: object
+  handler.ScanResponse:
+    properties:
+      xml_output:
+        example: <?xml version="1.0" encoding="UTF-8"?>...
+        type: string
+    type: object
+host: localhost:8082
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: REST API service to execute Nmap scans and return XML results.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Nmap Shot API
+  version: "1.0"
+paths:
+  /scan:
+    post:
+      consumes:
+      - application/json
+      description: Execute an nmap scan on specified targets and ports, returning
+        RawXML output.
+      parameters:
+      - description: Scan Parameters
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handler.ScanRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.ScanResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      summary: Run Nmap Scan
+      tags:
+      - scan
+schemes:
+- http
+swagger: "2.0"
