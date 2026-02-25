@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"crypto/subtle"
+	"log"
 	"net/http"
 	"os"
 
@@ -26,6 +27,7 @@ func APIKeyAuth() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		expectedKey := os.Getenv(APIKeyEnvVar)
 		if expectedKey == "" {
+			log.Println("[Auth] API key is not configured on the server")
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"error": "API key is not configured on the server",
 			})
@@ -35,6 +37,7 @@ func APIKeyAuth() gin.HandlerFunc {
 
 		providedKey := c.GetHeader(APIKeyHeader)
 		if providedKey == "" {
+			log.Printf("[Auth] Missing API key from IP: %s\n", c.ClientIP())
 			c.JSON(http.StatusUnauthorized, gin.H{
 				"error": "Missing API key. Please provide the X-API-Key header.",
 			})
@@ -44,6 +47,7 @@ func APIKeyAuth() gin.HandlerFunc {
 
 		// Use constant-time comparison to prevent timing attacks
 		if subtle.ConstantTimeCompare([]byte(expectedKey), []byte(providedKey)) != 1 {
+			log.Printf("[Auth] Invalid API key used from IP: %s\n", c.ClientIP())
 			c.JSON(http.StatusForbidden, gin.H{
 				"error": "Invalid API key.",
 			})
