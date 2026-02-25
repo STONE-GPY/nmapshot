@@ -17,6 +17,7 @@ manifests:
         chartPath: charts/nmapshot
         valuesFiles:
           - charts/nmapshot/values.yaml
+          - charts/nmapshot/values.dev.yaml
         setValueTemplates:
           image.repository: "{{.IMAGE_FULLY_QUALIFIED}}"
 deploy:

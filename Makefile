@@ -1,3 +1,9 @@
+# Include .env file and export variables if it exists
+ifneq (,$(wildcard ./.env))
+include .env
+export
+endif
+
 .PHONY: help build dev deploy clean test
 
 # Default target
@@ -13,6 +19,9 @@ build:
 	docker build -t nmapshot:latest .
 
 dev:
+	@echo "env:" > charts/nmapshot/values.dev.yaml
+	@echo "  API_KEY: \"$$API_KEY\"" >> charts/nmapshot/values.dev.yaml
+	@echo "  ALLOWED_PORTS: \"$$ALLOWED_PORTS\"" >> charts/nmapshot/values.dev.yaml
 	skaffold dev --port-forward
 
 deploy:
@@ -21,6 +30,7 @@ deploy:
 clean:
 	helm uninstall nmapshot -n default || true
 	rm -f nmapshot
+	rm -f charts/nmapshot/values.dev.yaml
 
 test:
 	go test -v ./...

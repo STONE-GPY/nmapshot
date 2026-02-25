@@ -25,3 +25,5 @@ charts/**/*.tgz
 Dockerfile
 .dockerignore
 skaffold.yaml
+
+Makefile
