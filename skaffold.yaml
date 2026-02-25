@@ -1,0 +1,29 @@
+apiVersion: skaffold/v4beta7
+kind: Config
+metadata:
+  name: nmapshot
+build:
+  local:
+    push: false
+  artifacts:
+    - image: nmapshot
+      context: .
+      docker:
+        dockerfile: Dockerfile
+manifests:
+  helm:
+    releases:
+      - name: nmapshot
+        chartPath: charts/nmapshot
+        valuesFiles:
+          - charts/nmapshot/values.yaml
+        setValueTemplates:
+          image.repository: "{{.IMAGE_FULLY_QUALIFIED}}"
+deploy:
+  helm: {}
+portForward:
+  - resourceType: service
+    resourceName: nmapshot
+    port: 8082
+    localPort: 8082
+    namespace: default

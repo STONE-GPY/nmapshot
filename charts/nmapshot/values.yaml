@@ -1,0 +1,35 @@
+# Default values for nmapshot.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: "nmapshot:latest"
+  pullPolicy: IfNotPresent
+
+# This is for the secrets for pulling an image from a private repository
+imagePullSecrets: []
+
+# This is for setting up a service
+service:
+  type: ClusterIP
+  port: 8082
+
+# This block is for setting up the ingress
+ingress:
+  enabled: false
+  className: ""
+  hosts:
+    - chart-example.local
+  tls: []
+
+# Environmental variables for the application
+env:
+  API_KEY: "default-secret-key"
+  ALLOWED_PORTS: "1-65535"
+  # OTEL env vars will be injected here during deployment or locally
+  OTEL_SERVICE_NAME: "nmapshot"
+  OTEL_TRACES_EXPORTER: "otlp"
+  OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-collector.default.svc.cluster.local:4318"
+  OTEL_EXPORTER_OTLP_INSECURE: "true"
