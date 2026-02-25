@@ -10,6 +10,7 @@ import (
 
 	"github.com/Ullaakut/nmap/v4"
 	"github.com/gin-gonic/gin"
+	"go.opentelemetry.io/otel"
 
 	"nmapshot/config"
 )
@@ -70,8 +71,12 @@ func (h *ScanHandler) Handle(c *gin.Context) {
 		return
 	}
 
+	tracer := otel.Tracer("nmapshot/handler")
+	scanCtx, span := tracer.Start(ctx, "nmap.Run")
+	defer span.End()
+
 	// Run the scan
-	result, err := scanner.Run(ctx)
+	result, err := scanner.Run(scanCtx)
 	if err != nil {
 		if ctx.Err() == context.DeadlineExceeded {
 			c.JSON(http.StatusGatewayTimeout, ErrorResponse{Error: "Scan timed out"})

@@ -26,23 +26,13 @@ definitions:
     - ports
     - targets
     type: object
-  handler.ScanResponse:
-    properties:
-      xml_output:
-        example: <?xml version="1.0" encoding="UTF-8"?>...
-        type: string
-    type: object
 host: localhost:8082
 info:
-  contact:
-    email: support@swagger.io
-    name: API Support
-    url: http://www.swagger.io/support
+  contact: {}
   description: REST API service to execute Nmap scans and return XML results.
   license:
-    name: Apache 2.0
-    url: http://www.apache.org/licenses/LICENSE-2.0.html
-  termsOfService: http://swagger.io/terms/
+    name: MIT
+    url: https://github.com/gpy/nmapshot/blob/main/LICENSE
   title: Nmap Shot API
   version: "1.0"
 paths:
@@ -51,7 +41,7 @@ paths:
       consumes:
       - application/json
       description: Execute an nmap scan on specified targets and ports, returning
-        RawXML output.
+        raw Nmap XML output. Ports must be within the server-configured allowed range.
       parameters:
       - description: Scan Parameters
         in: body
@@ -60,12 +50,12 @@ paths:
         schema:
           $ref: '#/definitions/handler.ScanRequest'
       produces:
-      - application/json
+      - text/xml
       responses:
         "200":
-          description: OK
+          description: Nmap XML output
           schema:
-            $ref: '#/definitions/handler.ScanResponse'
+            type: string
         "400":
           description: Bad Request
           schema:
@@ -74,9 +64,16 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/handler.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
       summary: Run Nmap Scan
       tags:
       - scan
 schemes:
 - http
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: X-API-Key
+    type: apiKey
 swagger: "2.0"

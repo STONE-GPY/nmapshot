@@ -9,15 +9,10 @@ const docTemplate = `{
     "info": {
         "description": "{{escape .Description}}",
         "title": "{{.Title}}",
-        "termsOfService": "http://swagger.io/terms/",
-        "contact": {
-            "name": "API Support",
-            "url": "http://www.swagger.io/support",
-            "email": "support@swagger.io"
-        },
+        "contact": {},
         "license": {
-            "name": "Apache 2.0",
-            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+            "name": "MIT",
+            "url": "https://github.com/gpy/nmapshot/blob/main/LICENSE"
         },
         "version": "{{.Version}}"
     },
@@ -26,12 +21,17 @@ const docTemplate = `{
     "paths": {
         "/scan": {
             "post": {
-                "description": "Execute an nmap scan on specified targets and ports, returning RawXML output.",
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Execute an nmap scan on specified targets and ports, returning raw Nmap XML output. Ports must be within the server-configured allowed range.",
                 "consumes": [
                     "application/json"
                 ],
                 "produces": [
-                    "application/json"
+                    "text/xml"
                 ],
                 "tags": [
                     "scan"
@@ -50,9 +50,9 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "Nmap XML output",
                         "schema": {
-                            "$ref": "#/definitions/handler.ScanResponse"
+                            "type": "string"
                         }
                     },
                     "400": {
@@ -109,15 +109,13 @@ const docTemplate = `{
                     ]
                 }
             }
-        },
-        "handler.ScanResponse": {
-            "type": "object",
-            "properties": {
-                "xml_output": {
-                    "type": "string",
-                    "example": "\u003c?xml version=\"1.0\" encoding=\"UTF-8\"?\u003e..."
-                }
-            }
+        }
+    },
+    "securityDefinitions": {
+        "ApiKeyAuth": {
+            "type": "apiKey",
+            "name": "X-API-Key",
+            "in": "header"
         }
     }
 }`
