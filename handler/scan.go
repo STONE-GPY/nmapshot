@@ -74,6 +74,7 @@ func (h *ScanHandler) Handle(c *gin.Context) {
 
 	scanner, err := nmap.NewScanner(options...)
 	if err != nil {
+		log.Printf("[Scan API] Failed to create nmap scanner: %v", err)
 		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: fmt.Sprintf("Failed to create nmap scanner: %v", err)})
 		return
 	}
