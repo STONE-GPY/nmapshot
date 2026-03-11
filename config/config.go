@@ -55,6 +55,8 @@ const (
 	// Format: comma-separated list of ports and/or ranges.
 	// Example: "80,100,125-256,1088-1090"
 	AllowedPortsEnvVar = "ALLOWED_PORTS"
+	//
+	RestAPIPort = "REST_API_PORT"
 )
 
 // LoadAllowedPorts reads the allowed port list from the ALLOWED_PORTS environment variable.
@@ -128,4 +130,15 @@ func validatePort(port int) error {
 		return fmt.Errorf("port %d is out of valid range (1-65535)", port)
 	}
 	return nil
+}
+
+func LoadRestAPIPort() string {
+	port := os.Getenv(RestAPIPort)
+	if p, e := strconv.Atoi(port); e != nil {
+		return "8082"
+	} else if p > 0 && p < 65535 {
+		return port
+	} else {
+		return "8082"
+	}
 }

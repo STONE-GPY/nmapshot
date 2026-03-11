@@ -122,8 +122,9 @@ func main() {
 		v1.POST("/scan", scanHandler.Handle)
 	}
 
-	log.Println("Server starting on :8082...")
-	if err := r.Run(":8082"); err != nil {
+	port := config.LoadRestAPIPort()
+	log.Printf("Server starting on :%s...\n", port)
+	if err := r.Run(":" + port); err != nil {
 		log.Fatal(err)
 	}
 }
